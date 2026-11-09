@@ -1,53 +1,66 @@
-from pydantic import BaseModel ,EmailStr , Field
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import Annotated
 from datetime import datetime
 from enum import Enum 
 
 
-class Role(str,Enum):
+class Role(str, Enum):
     admin = "admin"
     user = "user"
 
 
-
 class UserBase(BaseModel):
-     name:str 
-     email:EmailStr 
+    name: str 
+    email: EmailStr 
+
 
 class UserCreate(UserBase):
-
-    password:Annotated[str,Field(min_length=8,max_length=30)]
-
-
+    password: Annotated[str, Field(min_length=8, max_length=128)]
 
 
 class UserResponse(UserBase):
-        id:int 
-        role:Role = Role.user 
-        is_verified:bool 
-        is_active:bool 
-        created_at:datetime 
-        updated_at:datetime  
+    id: int 
+    role: Role = Role.user 
+    is_verified: bool 
+    is_active: bool 
+    created_at: datetime 
+    updated_at: datetime | None = None
 
-
-        class Config:
-             from_attributes = True # when you fetch data from db this will tell instead of thing like dictanly that pydantic do , thin its a object 
-
+    model_config = ConfigDict(from_attributes=True)
 
 
 class LoginUser(BaseModel):
-     email:EmailStr 
-     password:Annotated[str,Field(min_length=8,max_length=25)]
+    email: EmailStr 
+    password: Annotated[str, Field(min_length=8, max_length=128)]
 
-     class Config:
-          from_attributes=True 
+    model_config = ConfigDict(from_attributes=True) 
 
 
 class GetUser(BaseModel):
      email:EmailStr 
      role:Role
+     name:str 
 
-     class Config:
-          from_attributes=True 
-          use_enum_values=True 
+     model_config = {
+          "from_attributes": True,
+          "use_enum_values": True
+     }
+
+
+
+class TokenSchema(BaseModel):
+     exp:int
+     sub:str
+     id:int
+     type:str | None = None
+
+
+class TokenResponse(BaseModel):
+     access_token: str
+     refresh_token: str
+     token_type: str = "bearer"
+
+
+class RefreshTokenRequest(BaseModel):
+     refresh_token: str
           

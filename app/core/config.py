@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES :int 
     REFRESH_TOKEN_EXPIRE_MINUTES :int 
     timeout:int 
+    CLIENT_ID:str
+    CLIENT_SECRET:str
 
     # Tells Pydantic to look for a file named .env
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
